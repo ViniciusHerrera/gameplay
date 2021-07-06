@@ -39,10 +39,12 @@ export function Header({ title, action = false }: Props) {
       </Text>
 
       {
-        action &&
-        <View>
-          {action}
-        </View>
+        action ?
+          <View>
+            {action}
+          </View>
+          :
+          <View style={{ width: 24 }} /> // Acrescenta a View vazia para manter texto centralizado
       }
     </LinearGradient>
   );
