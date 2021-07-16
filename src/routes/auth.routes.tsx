@@ -4,7 +4,6 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { theme } from "../global/styles/theme";
 
 import { Home } from "../screens/Home";
-import { SignIn } from "../screens/Signin";
 import { AppointmentDetails } from "../screens/AppointmentDetails";
 import { AppointmentCreate } from "../screens/AppointmentCreate";
 
@@ -22,11 +21,6 @@ export function AuthRoutes() {
       }}
     >
       {/* A ordem que as telas são inseridas nesse arquivo, define a ordem de apresentação */}
-
-      <Screen
-        name="SingIn"
-        component={SignIn}
-      />
 
       <Screen
         name="Home"
