@@ -1,8 +1,14 @@
 import React, { createContext, useContext, useState, ReactNode } from "react"; // Importação para criar contexto
 import * as AuthSession from 'expo-auth-session';  //Importa biblioteca de autenticação
 
-import { SCOPE, CLIENT_ID, CDN_IMAGE, REDIRECT_URI, RESPONSE_TYPE } from '../configs';
 import { api } from "../services/api";
+
+// Busca os parametros direto das variaveis de ambiente
+const { SCOPE } = process.env;
+const { CLIENT_ID } = process.env;
+const { CDN_IMAGE } = process.env;
+const { REDIRECT_URI } = process.env;
+const { RESPONSE_TYPE } = process.env;
 
 type User = {
   id: string;
@@ -25,7 +31,8 @@ type AuthProviderProps = {
 
 type AuthorizationResponse = AuthSession.AuthSessionResult & {
   params: {
-    access_token: string;
+    access_token?: string; // Token é opcional porque o usuário pode cancelar a operação
+    error?: string;
   }
 }
 
@@ -45,7 +52,7 @@ function AuthProvider({ children }: AuthProviderProps) { // Funnção recebera u
       const { type, params } = await AuthSession
         .startAsync({ authUrl }) as AuthorizationResponse; //Adiciona a tipagem definida no topo
 
-      if (type === "success") {
+      if (type === "success" && !params.error) {
         api.defaults.headers.authorization = `Bearer ${params.access_token}`; //injeta o token no cabeçalho de todas as requisições
 
         const userInfo = await api.get('/users/@me'); // Busca dados do usuário
@@ -58,14 +65,11 @@ function AuthProvider({ children }: AuthProviderProps) { // Funnção recebera u
           firstName,
           token: params.access_token
         });
-
-        setLoading(false);
-      } else {
-        setLoading(false);
       }
-
     } catch {
       throw new Error('Não foi possível autenticar');
+    } finally {
+      setLoading(false);
     }
   }
 
