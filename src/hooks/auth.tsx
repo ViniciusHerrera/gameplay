@@ -25,6 +25,7 @@ type AuthContextData = {
   user: User;
   loading: boolean;
   singIn: () => Promise<void>; // Função do tipo Promise, pois pode demorar para apresentar retorno
+  singOut: () => Promise<void>;
 }
 
 type AuthProviderProps = {
@@ -78,6 +79,11 @@ function AuthProvider({ children }: AuthProviderProps) { // Funnção recebera u
     }
   }
 
+  async function singOut() {
+    setUser({} as User); //Seta um usuário vazio
+    await AsyncStorage.removeItem(COLLECTION_USERS);
+  }
+
   //Carrega os dados da materia
   async function loadUserStorageData() {
     const storage = await AsyncStorage.getItem(COLLECTION_USERS);
@@ -98,7 +104,8 @@ function AuthProvider({ children }: AuthProviderProps) { // Funnção recebera u
     <AuthContext.Provider value={{  // Criamos nosso context provider
       user,
       loading,
-      singIn
+      singIn,
+      singOut
     }}>
       {children}
     </AuthContext.Provider>

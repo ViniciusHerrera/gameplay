@@ -18,42 +18,19 @@ import { styles } from "./styles";
 export function Home() {
   const navigation = useNavigation();
   const [category, setCategory] = useState('');
-  //const [appointments, setAppointments] = useState<AppointmentsProps[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentsProps[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const appointments = [
-    {
-      id: '1',
-      guild: {
-        id: '1',
-        name: 'Lendários',
-        icon: null,
-        owner: true
-      },
-      category: '1',
-      date: '22/06 às 20:40h',
-      description: 'É hoje que vamos chegar ao challenger sem perder uma partida da md10'
-    },
-    {
-      id: '2',
-      guild: {
-        id: '1',
-        name: 'Lendários',
-        icon: null,
-        owner: true
-      },
-      category: '1',
-      date: '22/06 às 20:40h',
-      description: 'É hoje que vamos chegar ao challenger sem perder uma partida da md10'
-    },
-  ]
 
   function handleCategorySelect(categoryId: string) {
     categoryId === category ? setCategory('') : setCategory(categoryId);
   }
 
-  function handleAppointmentDetails() {
-    navigation.navigate('AppointmentDetails');
+  // function handleAppointmentDetails(guildSelected: AppointmentsProps) {
+  //   navigation.navigate('AppointmentDetails', guildSelected); // Passa a guild como parametro para a interface
+  // }
+
+  function handleAppointmentDetails(guildSelected: AppointmentsProps) {
+    navigation.navigate('AppointmentDetails', { guildSelected });
   }
 
   function handleAppointmentCreate() {
@@ -64,13 +41,12 @@ export function Home() {
     const response = await AsyncStorage.getItem(COLLECTION_APPOINTMENTS);
     const storage: AppointmentsProps[] = response ? JSON.parse(response) : []; //Define a tipagem do nosso appointments
 
-    // if (category) {
-    //   setAppointments(storage.filter(item => item.category === category));
-    // } else {
-    //   setAppointments(storage);
-    // }
-    console.log(storage);
-    console.log(appointments);
+    if (category) {
+      setAppointments(storage.filter(item => item.category === category));
+    } else {
+      setAppointments(storage);
+    }
+
     setLoading(false);
   }
 
@@ -96,7 +72,7 @@ export function Home() {
           <>
             <ListHeader
               title="Partidas agendadas"
-              subtitle="Total 6"
+              subtitle={`Total ${appointments.length}`}
             />
 
             <FlatList
@@ -105,7 +81,7 @@ export function Home() {
               renderItem={({ item }) => (
                 <Appointment
                   data={item}
-                  onPress={handleAppointmentDetails}
+                  onPress={() => handleAppointmentDetails(item)}
                 />
               )}
               contentContainerStyle={{ paddingBottom: 69 }}
